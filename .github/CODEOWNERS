@@ -1,0 +1,8 @@
+# Default owners for everything
+* @mercedes-benz/dbt-iterative-snapshot-maintainers
+
+# Macros require careful review
+/macros/ @mercedes-benz/dbt-iterative-snapshot-maintainers
+
+# CI/CD changes
+/.github/ @mercedes-benz/dbt-iterative-snapshot-maintainers

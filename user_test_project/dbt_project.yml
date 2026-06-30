@@ -1,0 +1,24 @@
+# Example dbt project simulating a real user installing dbt-iterative-snapshot
+name: 'my_company_project'
+version: '1.0.0'
+config-version: 2
+
+profile: 'my_company_project'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Package vars at root level (required for var() resolution in materialization context)
+vars:
+  metadata_schema: "00_metadata"
+  dev_table_prefix: "pytestoss"
+  enable_data_quality_checks: true
+  enable_error_logging: true
+  enable_consistency_checks: true
+  enable_temp_views: true

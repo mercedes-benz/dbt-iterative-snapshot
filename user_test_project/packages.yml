@@ -1,0 +1,7 @@
+# User installs the package from local path (simulating pre-release testing)
+# In production, this would be:
+#   - package: mercedes-benz/dbt_iterative_snapshot
+#     version: [">=1.0.0", "<2.0.0"]
+
+packages:
+  - local: ../

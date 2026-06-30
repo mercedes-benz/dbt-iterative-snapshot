@@ -1,0 +1,45 @@
+name: 'dbt_iterative_snapshot_integration_tests'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dbt_iterative_snapshot'
+
+model-paths: ["models"]
+analysis-paths: ["analysis"] 
+test-paths: ["tests"]
+seed-paths: ["data"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+require-dbt-version: [">=1.6.0", "<2.0.0"]
+
+models:
+  dbt_iterative_snapshot_integration_tests:
+    +materialized: table
+    +file_format: delta
+    
+seeds:
+  dbt_iterative_snapshot_integration_tests:
+    +file_format: delta
+
+vars:
+  # Test configurations - using new user-friendly variable names
+  iterative_snapshot_default_batch_size: 3
+  enable_clustering: true
+  metadata_schema: "00_metadata"
+  dev_table_prefix: "pytestoss"
+  debug_mode: true  # Enable verbose logging for tests
+  
+  # Performance testing
+  batch_processing_mode: conservative  # Use smaller batches for tests
+  enable_data_quality_checks: true
+  enable_error_logging: true
+  
+  # Enable example model tests for integration testing
+  dbt_iterative_snapshot_examples_enabled: true
+
+# Target configurations are now in profiles.yml

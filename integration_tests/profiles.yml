@@ -1,0 +1,25 @@
+# Databricks profile configuration for integration tests
+# Configure via environment variables for your environment
+
+dbt_iterative_snapshot:
+  target: dev
+  outputs:
+    # Local development
+    dev:
+      type: databricks
+      catalog: "{{ env_var('DBT_DATABRICKS_CATALOG') }}"
+      schema: "{{ env_var('DBT_DATABRICKS_SCHEMA') }}"
+      host: "{{ env_var('DBT_DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH') }}"
+      token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}"
+      threads: 4
+
+    # CI-specific configuration (for GitHub Actions)
+    ci:
+      type: databricks
+      catalog: "{{ env_var('DBT_DATABRICKS_CATALOG') }}"
+      schema: "{{ env_var('DBT_DATABRICKS_SCHEMA') }}"
+      host: "{{ env_var('DBT_DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH') }}"
+      token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}"
+      threads: 2
