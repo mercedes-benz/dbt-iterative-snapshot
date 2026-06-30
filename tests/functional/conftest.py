@@ -91,6 +91,7 @@ def project_config_update():
         "vars": {
             # All vars at root level (as used by macros)
             "dev_table_prefix": prefix,
+            "disable_dev_table_prefix": True,  # Disable for dbt model aliases, but keep for explicit table names
             "metadata_schema": schema,
             "enable_data_quality_checks": True,
             "enable_error_logging": True,

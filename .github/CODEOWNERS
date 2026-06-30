@@ -1,8 +1,8 @@
 # Default owners for everything
-* @mercedes-benz/dbt-iterative-snapshot-maintainers
+* @hrdf/admins
 
-# Macros require careful review
-/macros/ @mercedes-benz/dbt-iterative-snapshot-maintainers
+# Macros require careful review (critical for functionality)
+/macros/ @hrdf/admins
 
-# CI/CD changes
-/.github/ @mercedes-benz/dbt-iterative-snapshot-maintainers
+# CI/CD changes (affects repository behavior)
+/.github/ @hrdf/admins

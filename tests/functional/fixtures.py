@@ -33,7 +33,7 @@ class IterativeSnapshot:
             )
         }}
 
-        SELECT  
+        SELECT
             CAST(null as string) AS uk1,
             CAST(null as string) AS uk2,
             CAST(null as string) AS attribute1,

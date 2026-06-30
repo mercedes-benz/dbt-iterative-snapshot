@@ -41,8 +41,8 @@ class TestIterativeSnapshot():
         schema = project.test_schema
 
         def full_name(base_name):
-            if PREFIX:
-                return f"{PREFIX}_{schema}_{base_name}"
+            # For CI tests, use clean names to match disabled prefixing
+            # Prefixes are disabled via disable_dev_table_prefix=True in conftest.py
             return base_name
 
         params = {

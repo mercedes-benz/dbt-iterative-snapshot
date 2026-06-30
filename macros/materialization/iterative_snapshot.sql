@@ -17,10 +17,11 @@
 {%- set invalidate_hard_deletes = config.get('invalidate_hard_deletes') -%}
 {# Metadata table naming: use config override if provided, otherwise use default with optional prefix #}
 {%- set dev_prefix = var('dev_table_prefix', '') -%}
+{%- set disable_prefix = var('disable_dev_table_prefix', false) -%}
 {%- set metadata_schema = var('metadata_schema', 'dbt_iterative_snapshot_metadata') -%}
 {%- set base_metadata_name = config.get('metadata_table_name', 'iterative_snapshot_metadata') -%}
 {%- set base_error_log_name = config.get('error_log_table_name', 'iterative_snapshot_error_log') -%}
-{%- if dev_prefix -%}
+{%- if dev_prefix and not disable_prefix -%}
     {%- set metadata_table_name = dev_prefix ~ '_' ~ target.schema ~ '_' ~ base_metadata_name -%}
     {%- set error_log_table_name = dev_prefix ~ '_' ~ target.schema ~ '_' ~ base_error_log_name -%}
 {%- else -%}

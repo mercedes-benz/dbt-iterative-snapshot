@@ -18,8 +18,9 @@
 
     {%- else -%}
         {%- set prefix = var('dev_table_prefix', '') -%}
+        {%- set disable_prefix = var('disable_dev_table_prefix', false) -%}
 
-        {%- if prefix and prefix != '' -%}
+        {%- if prefix and prefix != '' and not disable_prefix -%}
             {{ prefix }}_{{ target.schema }}_{{ node.name }}
         {%- else -%}
             {{ node.name }}
