@@ -12,9 +12,9 @@ pytest==8.3.3
 dbt-tests-adapter==1.11.0
 python-dotenv==1.0.1
 
-# Linting
-sqlfluff==3.3.1
-sqlfluff-templater-dbt==3.3.1
+# Linting (removed SQLFluff - too complex for this project without proper config)
+# sqlfluff==3.3.1
+# sqlfluff-templater-dbt==3.3.1
 
 # Pre-commit hooks
 pre-commit==4.3.0
