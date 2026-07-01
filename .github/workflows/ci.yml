@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 name: CI
 
 on:
@@ -15,6 +17,20 @@ env:
   DBT_DEV_TABLE_PREFIX: ${{ secrets.DBT_DEV_TABLE_PREFIX }}
 
 jobs:
+  # DCO (Developer Certificate of Origin) sign-off check
+  dco-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check DCO sign-off
+        uses: opensourceways/dco-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   # dbt compile check
   compile:
     runs-on: ubuntu-latest
@@ -75,3 +91,20 @@ jobs:
 
       - name: Run functional tests
         run: pytest tests/functional/test_iterative_snapshot.py -s -v
+
+  # Black Duck SCA (Software Composition Analysis) scan
+  blackduck-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Black Duck SCA Scan
+        uses: blackduck-inc/black-duck-security-scan@v2
+        env:
+          DETECT_PROJECT_NAME: dbt-iterative-snapshot
+          DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
+        with:
+          blackducksca_url: https://mercedes-benz.app.blackduck.com/
+          blackducksca_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          blackducksca_scan_full: ${{ github.event_name == 'push' }}

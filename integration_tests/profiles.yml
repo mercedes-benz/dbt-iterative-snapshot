@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 # Databricks profile configuration for integration tests
 # Configure via environment variables for your environment
 

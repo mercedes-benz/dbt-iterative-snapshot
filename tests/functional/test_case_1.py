@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 """ regular snapshot load with new file only
 Scope:
 

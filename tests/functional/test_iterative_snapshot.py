@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 import pytest
 import yaml
 import os

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 # User's profile configuration
 my_company_project:
   target: dev

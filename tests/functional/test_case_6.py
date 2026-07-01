@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 """   Test 'backing_table' scenario: Out of order file older than 60 days
 
 Scope: Out of order logic with files older than 60 days

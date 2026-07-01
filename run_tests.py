@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 #!/usr/bin/env python3
 """
 Test runner for dbt-iterative-snapshot.

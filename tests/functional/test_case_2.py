@@ -1,5 +1,7 @@
-"""  load multiple files at once  
-Scope: We want to test snapshots that load multiple files at once. One file should have no changes. 
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+"""  load multiple files at once
+Scope: We want to test snapshots that load multiple files at once. One file should have no changes.
 Snapshots should be run twice and 20_clean table checked after each run, to check how the "no change" file is handled.
 
 We use 2 u_keys for 4 different days (2024-01-01; 2024-01-05; 2024-01-06; 2024-01-07)

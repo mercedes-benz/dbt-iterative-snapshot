@@ -1,3 +1,5 @@
+{# SPDX-License-Identifier: MIT #}
+{# Copyright (c) 2024 Mercedes-Benz Group AG #}
 -- User's model using the iterative_snapshot materialization
 -- This is exactly how a real user would configure their model
 

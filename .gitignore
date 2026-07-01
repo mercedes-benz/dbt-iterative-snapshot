@@ -3,6 +3,10 @@ target/
 dbt_packages/
 logs/
 .user.yml
+integration_tests/target/
+integration_tests/logs/
+user_test_project/target/
+user_test_project/logs/
 
 # OS generated files
 .DS_Store
@@ -109,7 +113,8 @@ dmypy.json
 .docs
 CLAUDE.md
 databricks_mcp.log
+.mcp.json
+.pytest_cache/
 
 # Internal compliance docs (not for public release)
 FOSS_COMPLIANCE.md
-docs/FOSS_PUBLISHING_GUIDE.md

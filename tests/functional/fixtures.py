@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 class IterativeSnapshot:
     """
     A class to manage SQL operations related to iterative snapshots, such as dropping, truncating,

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 # Example dbt project simulating a real user installing dbt-iterative-snapshot
 name: 'my_company_project'
 version: '1.0.0'

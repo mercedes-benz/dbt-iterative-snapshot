@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 """   handle back fill with older files
 
 Scope: We want to test snapshots that load multiple files at once. One file should have no changes. 

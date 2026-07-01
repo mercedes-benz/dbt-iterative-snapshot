@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
 """   Loading new records after retention period
 
 Scope: We want to test how the Snapshot logic behaves if u_keys are not present in raw layer anymore due to retention period.
