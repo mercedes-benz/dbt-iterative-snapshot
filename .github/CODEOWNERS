@@ -1,8 +1,8 @@
 # Default owners for everything
-* @hrdf/admins
+* @Amin-Siddique
 
 # Macros require careful review (critical for functionality)
-/macros/ @hrdf/admins
+/macros/ @Amin-Siddique
 
 # CI/CD changes (affects repository behavior)
-/.github/ @hrdf/admins
+/.github/ @Amin-Siddique

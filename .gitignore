@@ -118,3 +118,10 @@ databricks_mcp.log
 
 # Internal compliance docs (not for public release)
 FOSS_COMPLIANCE.md
+FOSS_ACTION_PLAN.md
+docs/FOSS_PUBLISHING_GUIDE.md
+docs/FOSS_READINESS_CHECKLIST.md
+docs/FOSS_ACTION_PLAN.md
+
+# Internal setup markers
+.github/setup_completed.txt
