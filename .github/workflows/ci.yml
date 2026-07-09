@@ -28,19 +28,21 @@ jobs:
           fetch-depth: 0
 
       - name: Check DCO sign-off
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          COMMITS=$(git log --format='%H %s' origin/main..HEAD)
+          COMMITS=$(git log --format='%H' "$BASE_SHA"..HEAD)
           FAILED=0
-          while IFS= read -r line; do
-            HASH=$(echo "$line" | cut -d' ' -f1)
+          for HASH in $COMMITS; do
             if [ -z "$HASH" ]; then continue; fi
             if ! git log -1 --format='%B' "$HASH" | grep -q "^Signed-off-by: "; then
-              echo "::error::Commit $HASH is missing Signed-off-by line"
+              SUBJECT=$(git log -1 --format='%s' "$HASH")
+              echo "::error::Commit ${HASH:0:7} ($SUBJECT) is missing Signed-off-by line"
               FAILED=1
             fi
-          done <<< "$COMMITS"
+          done
           if [ "$FAILED" -eq 1 ]; then
-            echo "::error::One or more commits are missing DCO sign-off. Please use 'git commit -s' or add 'Signed-off-by: Name <email>' to your commit messages."
+            echo "::error::One or more commits are missing DCO sign-off. Please use 'git commit -s'."
             exit 1
           fi
           echo "All commits have DCO sign-off."
