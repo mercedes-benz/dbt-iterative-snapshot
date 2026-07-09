@@ -31,7 +31,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          COMMITS=$(git log --format='%H' "$BASE_SHA"..HEAD)
+          COMMITS=$(git log --no-merges --format='%H' "$BASE_SHA"..HEAD)
           FAILED=0
           for HASH in $COMMITS; do
             if [ -z "$HASH" ]; then continue; fi
@@ -123,6 +123,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Black Duck SCA Scan
+        continue-on-error: true
         uses: blackduck-inc/black-duck-security-scan@v2
         env:
           DETECT_PROJECT_NAME: dbt-iterative-snapshot

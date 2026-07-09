@@ -20,4 +20,4 @@ python-dotenv==1.2.2
 pre-commit==4.3.0
 
 # Optional: for validation scripts
-databricks-sql-connector>=2.0.0
+databricks-sql-connector>=4.3.0
