@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check DCO sign-off
-        uses: opensourceways/dco-check@v1
+        uses: dcoapp/app@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
