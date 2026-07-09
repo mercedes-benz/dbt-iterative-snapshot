@@ -5,7 +5,7 @@
 dbt-databricks==1.11.5
 dbt-adapters==1.22.8
 dbt-common==1.37.3
-dbt-core==1.11.6
+dbt-core==1.11.12
 
 # Testing
 pytest==9.0.3
