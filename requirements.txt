@@ -8,9 +8,9 @@ dbt-common==1.37.3
 dbt-core==1.11.6
 
 # Testing
-pytest==8.3.3
+pytest==9.0.3
 dbt-tests-adapter==1.11.0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 
 # Linting (removed SQLFluff - too complex for this project without proper config)
 # sqlfluff==3.3.1
