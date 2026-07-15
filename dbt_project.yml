@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+name: 'dbt_iterative_snapshot'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dbt_iterative_snapshot'
+
+macro-paths: ["macros"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+require-dbt-version: [">=1.9.0", "<2.0.0"]
+
+vars:
+  dbt_iterative_snapshot:
+    # Feature toggles
+    enable_data_quality_checks: true        # Detect corrupted records
+    enable_error_logging: true              # Log data quality issues
+    enable_consistency_checks: true         # Validate SCD2 integrity after each sequence
+    enable_temp_views: true                 # Use temporary views for efficiency
+    enable_schema_evolution: true           # Add new source columns to the snapshot table
+    materialize_staging: false              # Build staging as a physical table (very wide models)
+
+    # Metadata table configuration
+    metadata_schema: "dbt_iterative_snapshot_metadata"  # Schema for metadata/error tables
+    dev_table_prefix: ""                    # Optional prefix for metadata tables (useful for dev/test isolation)
+
+# Dispatch configuration for macro resolution
+dispatch:
+  - macro_namespace: dbt_iterative_snapshot
+    search_order: ['dbt_iterative_snapshot', 'dbt']

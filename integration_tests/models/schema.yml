@@ -1,0 +1,124 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+version: 2
+
+models:
+  - name: test_iterative_snapshot_basic
+    description: "Basic integration test for check strategy with multi-column unique key"
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "dbt_valid_from <= dbt_valid_to OR dbt_valid_to IS NULL"
+          config:
+            severity: error
+      - dbt_utils.expression_is_true:
+          expression: "dbt_valid_from <= current_timestamp()"
+          config:
+            severity: error
+    columns:
+      - name: uk1
+        description: "First part of unique key"
+        data_tests:
+          - not_null
+      - name: uk2
+        description: "Second part of unique key"
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        description: "Start of validity period"
+        data_tests:
+          - not_null
+      - name: dbt_change_type
+        description: "Type of change (insert, update, delete)"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['insert', 'update', 'delete']
+
+  - name: test_iterative_snapshot_check_all
+    description: "Integration test for check strategy with check_cols='all'"
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "dbt_valid_from <= dbt_valid_to OR dbt_valid_to IS NULL"
+          config:
+            severity: error
+    columns:
+      - name: uk1
+        data_tests:
+          - not_null
+      - name: uk2
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        data_tests:
+          - not_null
+      - name: dbt_change_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['insert', 'update', 'delete']
+
+  - name: test_iterative_snapshot_check_all_explicit
+    description: "Reference for test_iterative_snapshot_check_all with every column listed in check_cols"
+
+  - name: test_iterative_snapshot_timestamp_strategy
+    description: "Integration test for timestamp strategy"
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "dbt_valid_from <= dbt_valid_to OR dbt_valid_to IS NULL"
+          config:
+            severity: error
+    columns:
+      - name: user_id
+        description: "User identifier"
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        description: "Start of validity period"
+        data_tests:
+          - not_null
+
+  - name: test_out_of_order_data
+    description: "Integration test for out-of-order data handling"
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "dbt_valid_from <= dbt_valid_to OR dbt_valid_to IS NULL"
+          config:
+            severity: error
+    columns:
+      - name: user_id
+        description: "User identifier"
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        description: "Start of validity period"
+        data_tests:
+          - not_null
+
+seeds:
+  - name: sample_file_data
+    description: "Sample data simulating daily file exports for integration testing"
+    columns:
+      - name: user_id
+        description: "User identifier"
+        data_tests:
+          - not_null
+      - name: file_name
+        description: "Source file name"
+        data_tests:
+          - not_null
+      - name: file_timestamp
+        description: "File processing timestamp"
+        data_tests:
+          - not_null
+
+  - name: edge_case_data
+    description: "Edge case data for testing multi-column unique keys"
+    columns:
+      - name: uk1
+        description: "First part of composite unique key"
+        data_tests:
+          - not_null
+      - name: uk2
+        description: "Second part of composite unique key"
+        data_tests:
+          - not_null

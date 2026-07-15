@@ -1,0 +1,11 @@
+uk1,uk2,attribute1,attribute2,file_name,file_datetime
+1,A,value1,attr1,file_001.csv,2024-01-01 10:00:00
+2,B,value2,attr2,file_001.csv,2024-01-01 10:00:00
+3,C,value3,attr3,file_001.csv,2024-01-01 10:00:00
+1,A,value1_updated,attr1_updated,file_002.csv,2024-01-02 10:00:00
+2,B,value2,attr2,file_002.csv,2024-01-02 10:00:00
+4,D,value4,attr4,file_002.csv,2024-01-02 10:00:00
+1,A,value1_updated,attr1_updated,file_003.csv,2024-01-03 10:00:00
+2,B,value2_final,attr2_final,file_003.csv,2024-01-03 10:00:00
+3,C,value3,attr3,file_003.csv,2024-01-03 10:00:00
+5,E,value5,attr5,file_003.csv,2024-01-03 10:00:00
