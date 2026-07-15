@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          body: |
+            ## Installation
+
+            Add to your `packages.yml`:
+            ```yaml
+            packages:
+              - package: mercedes-benz/dbt_iterative_snapshot
+                version: ${{ github.ref_name }}
+            ```
+
+            Then run:
+            ```bash
+            dbt deps
+            ```
+
+            ## Changelog
+            See [CHANGELOG.md](https://github.com/mercedes-benz/dbt-iterative-snapshot/blob/main/CHANGELOG.md) for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
