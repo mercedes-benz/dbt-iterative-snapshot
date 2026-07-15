@@ -1,0 +1,11 @@
+employee_id,name,department,salary,status,modified_date,file_date
+1,Alice,Engineering,100000,Active,2024-01-01,2024-01-01
+2,Bob,Sales,80000,Active,2024-01-01,2024-01-01
+3,Carol,Engineering,95000,Active,2024-01-01,2024-01-01
+1,Alice,Engineering,105000,Active,2024-01-02,2024-01-02
+2,Bob,Sales,80000,Inactive,2024-01-02,2024-01-02
+4,Dave,Marketing,75000,Active,2024-01-02,2024-01-02
+1,Alice,Engineering,110000,Active,2024-01-03,2024-01-03
+3,Carol,Data Science,100000,Active,2024-01-03,2024-01-03
+4,Dave,Marketing,75000,Inactive,2024-01-03,2024-01-03
+5,Eve,Engineering,90000,Active,2024-01-03,2024-01-03

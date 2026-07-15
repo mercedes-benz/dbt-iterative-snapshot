@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+packages:
+  # Reference the local package being tested
+  - local: ../
+
+  # Standard testing utilities
+  - package: dbt-labs/dbt_utils
+    version: [">=1.0.0", "<2.0.0"]
