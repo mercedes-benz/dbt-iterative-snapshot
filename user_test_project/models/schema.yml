@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+version: 2
+
+models:
+  - name: employee_history
+    description: "SCD2 history of employee changes using iterative_snapshot"
+    columns:
+      - name: employee_id
+        description: "Employee identifier"
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: "Start of validity period"
+        tests:
+          - not_null
+      - name: dbt_change_type
+        description: "Type of change"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['insert', 'update', 'delete']
+
+seeds:
+  - name: raw_employee_exports
+    description: "Simulated daily employee file exports"

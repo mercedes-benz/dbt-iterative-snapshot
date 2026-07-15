@@ -1,0 +1,127 @@
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+integration_tests/target/
+integration_tests/logs/
+user_test_project/target/
+user_test_project/logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+.user.yml
+.docs
+CLAUDE.md
+databricks_mcp.log
+.mcp.json
+.pytest_cache/
+
+# Internal compliance docs (not for public release)
+FOSS_COMPLIANCE.md
+FOSS_ACTION_PLAN.md
+docs/FOSS_PUBLISHING_GUIDE.md
+docs/FOSS_READINESS_CHECKLIST.md
+docs/FOSS_ACTION_PLAN.md
+
+# Internal setup markers
+.github/setup_completed.txt

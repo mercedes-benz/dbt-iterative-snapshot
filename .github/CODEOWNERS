@@ -1,0 +1,8 @@
+# Default owners for everything
+* @Amin-Siddique
+
+# Macros require careful review (critical for functionality)
+/macros/ @Amin-Siddique
+
+# CI/CD changes (affects repository behavior)
+/.github/ @Amin-Siddique

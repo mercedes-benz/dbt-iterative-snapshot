@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+packages:
+  - local: ../
+    name: dbt_iterative_snapshot
+sha1_hash: de2deba3d66ce03d8c02949013650cc9b94f6030
