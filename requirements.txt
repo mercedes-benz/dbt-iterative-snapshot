@@ -3,7 +3,7 @@
 
 # dbt core and adapter
 dbt-databricks==1.11.5
-dbt-adapters==1.22.8
+dbt-adapters==1.24.5
 dbt-common==1.37.3
 dbt-core==1.11.6
 
