@@ -17,7 +17,7 @@ python-dotenv==1.2.2
 # sqlfluff-templater-dbt==3.3.1
 
 # Pre-commit hooks
-pre-commit==4.3.0
+pre-commit==4.6.1
 
 # Optional: for validation scripts
 databricks-sql-connector>=4.1.1,<4.1.4
