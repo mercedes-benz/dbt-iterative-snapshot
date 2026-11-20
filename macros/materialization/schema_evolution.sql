@@ -52,7 +52,7 @@
     {%- set not_in_check_cols = [] -%}
     {%- set check_cols = config.get('check_cols') -%}
     {%- if config.get('strategy') == 'check' and check_cols is not string and check_cols is iterable -%}
-        {%- set check_cols_lower = config.get('check_cols') | map('lower') | list -%}
+        {%- set check_cols_lower = check_cols | map('lower') | list -%}
         {%- for column in new_columns -%}
             {%- if column.name | lower not in check_cols_lower -%}
                 {%- do not_in_check_cols.append(column.name) -%}
