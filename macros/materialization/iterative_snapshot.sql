@@ -276,9 +276,30 @@
     {%- endif -%}
 {%- endif -%}
 
+{%- set materialize_staging = config.get('materialize_staging', var('materialize_staging', false)) -%}
+
 -- Create temporary staging table with all source data to avoid repeated model compilation
+{%- set source_table_relation = none -%}
 {%- if object_sequence|length > 0 -%}
-    {%- if config.get('enable_temp_views', var('enable_temp_views', true)) -%}
+    {%- if materialize_staging -%}
+        {#- materialize_staging=true: write the source rows for all pending sequences to a physical table once.
+            Every iteration then reads this table instead of re-inlining the model's query plan, which avoids
+            Spark's ConstantPropagation StackOverflowError and re-scanning the raw files for each sequence. -#}
+        {%- set source_table_relation = target_relation.incorporate(path={
+                "database": target_relation.database,
+                "schema": target_relation.schema,
+                "identifier": dbt_iterative_snapshot.iterative_snapshot_helper_identifier(target_relation.identifier, '__src')
+            }) -%}
+        {%- set create_source_table -%}
+            CREATE OR REPLACE TABLE {{ source_table_relation }}
+            AS
+            SELECT * FROM ( {{ model['compiled_code'] }} )
+            WHERE {{ sequence_by }} IN ('{{ object_sequence | join("','") }}')
+        {%- endset -%}
+        {%- do log("Materializing source data for " ~ (object_sequence | length) ~ " sequences to " ~ source_table_relation, info=True) -%}
+        {%- do run_query(create_source_table) -%}
+        {%- set temp_source_table = none -%}
+    {%- elif config.get('enable_temp_views', var('enable_temp_views', true)) -%}
         {%- set temp_source_table = target_relation.identifier ~ '__temp_source_' ~ invocation_id -%}
         
         {%- set create_temp_source -%}
@@ -295,10 +316,17 @@
     {%- endif -%}
 {%- endif -%}
 
+{#- Resolved once: planning the model query for every sequence is what materialize_staging avoids -#}
+{%- if out_of_order == 1 -%}
+    {%- set out_of_order_columns = get_columns_in_query(model['compiled_code']) -%}
+{%- endif -%}
+
 {%- for sequence in object_sequence | sort -%}
 
     {%- set source_data_sql -%}
-        {%- if temp_source_table -%}
+        {%- if source_table_relation -%}
+            {{ source_table_relation }}
+        {%- elif temp_source_table -%}
             `{{ temp_source_table }}`
         {%- else -%}
             ({{ model['compiled_code'] }})
@@ -357,7 +385,7 @@
                 group by {{ unique_key_concat }} having count(*) = 1)
             {%- if out_of_order == 1 -%}
                     UNION
-                SELECT {{ get_columns_in_query(model['compiled_code'])  | join(', ') }} FROM {{ backing_relation }}
+                SELECT {{ out_of_order_columns | join(', ') }} FROM {{ backing_relation }}
                 WHERE {{ sequence_by }} = '{{ sequence }}'
             {%- endif -%}
         {%- endset -%}
@@ -368,7 +396,7 @@
             SELECT * FROM {{ source_data_sql }} WHERE {{ sequence_by }} = '{{ sequence }}'
             {%- if out_of_order == 1 -%}
                     UNION
-                SELECT {{ get_columns_in_query(model['compiled_code'])  | join(', ') }} FROM {{ backing_relation }}
+                SELECT {{ out_of_order_columns | join(', ') }} FROM {{ backing_relation }}
                 WHERE {{ sequence_by }} = '{{ sequence }}'
             {%- endif -%}
         {%- endset -%}
@@ -376,7 +404,7 @@
 
 
 
-    {%- set staging_table = dbt_iterative_snapshot.build_iterative_snapshot_staging_table(strategy, build_sql, target_relation, check_cols_config) -%}
+    {%- set staging_table = dbt_iterative_snapshot.build_iterative_snapshot_staging_table(strategy, build_sql, target_relation, check_cols_config, source_table_relation) -%}
     
 
 -- this may no-op if the database does not require column expansion
@@ -443,6 +471,16 @@
 {%- endfor -%}
 
 -- Temporary view will be automatically cleaned up at session end
+{%- if source_table_relation -%}
+    {%- do run_query('DROP TABLE IF EXISTS ' ~ source_table_relation) -%}
+    {#- staging_table is scoped to the loop above, so post_snapshot at the end of this materialization can't drop it -#}
+    {%- set physical_staging_relation = target_relation.incorporate(path={
+            "database": target_relation.database,
+            "schema": target_relation.schema,
+            "identifier": dbt_iterative_snapshot.iterative_snapshot_helper_identifier(target_relation.identifier, '__dbt_tmp')
+        }) -%}
+    {%- do run_query('DROP TABLE IF EXISTS ' ~ physical_staging_relation) -%}
+{%- endif -%}
 
 {# Full-refresh: restore historical rows that were outside the raw retention window #}
 {%- if full_refresh_mode and fullrefresh_backup_relation is defined -%}

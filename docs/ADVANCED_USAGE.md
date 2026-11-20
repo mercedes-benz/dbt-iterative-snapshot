@@ -79,15 +79,20 @@ The materialization calls `iterative_snapshot_on_event(event_type, model_name, r
 | `out_of_order` | `incoming_sequences`, `max_processed_sequence` |
 | `schema_change` | `added`, `removed`, `not_in_check_cols` |
 
-The default implementation only logs. To send your own notifications, override it in your project:
+The default implementation only logs. To send your own notifications, such as email, override it in your project:
 
 ```sql
 -- macros/iterative_snapshot_events.sql
 {% macro default__iterative_snapshot_on_event(event_type, model_name, relation, details) %}
     {% do log("ALERT " ~ event_type ~ " on " ~ relation ~ ": " ~ details, info=True) %}
-    {# e.g. insert into an alerts table or call your notification macro #}
+    {% if target.name != 'dev' %}
+        {# my_send_mail is your own SQL function; it is not part of this package #}
+        {% do run_query("SELECT my_catalog.my_schema.my_send_mail('team@example.com', 'dbt snapshot: " ~ event_type ~ " on " ~ model_name ~ "')") %}
+    {% endif %}
 {% endmacro %}
 ```
+
+The hook runs inside the model, so an error it raises fails the model before the current sequence is merged: catch failures in your mail function if alerts must not block the load. `schema_change` fires on every run with pending sequences for as long as a column is missing from the source, so deduplicate it if needed.
 
 ```yaml
 # dbt_project.yml
