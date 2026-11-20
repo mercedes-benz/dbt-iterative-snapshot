@@ -50,11 +50,17 @@ vars:
 
 **Cause**: With hundreds of `check_cols`, Spark's optimizer recurses too deeply while planning the MERGE against the staging view.
 
-**Solution**: Build the staging relation as a physical table so it is optimized once, separately from the MERGE:
+**Solution**: Use physical tables so each step is optimized once, separately from the MERGE:
 ```sql
 {{ config(materialize_staging=true) }}
 ```
-The table is created in the model's schema and dropped at the end of a successful run. If a run fails midway, drop leftover `<model>__dbt_tmp_*` tables manually.
+This writes the source rows for all pending sequences to one table (read by every iteration instead of re-running the model query) and builds each staging relation as a table.
+
+With a multi-column `unique_key`, the staging select then joins on one key built from all key columns instead of one condition per column. The failure is more likely on a freshly started warehouse, so a model that passes on a warm one can still fail after a restart.
+
+**Limitation**: the single key compares the key columns as text, which only matches like a per-column comparison when both sides have the same type. If a key column's type differs between the source and the snapshot (for example `decimal(10,3)` against `decimal(10,2)`), the model keeps one condition per column and can still hit the error. Align the types, for example by casting the key column in the model to the snapshot's type, if it does.
+
+The tables are created in the model's schema and dropped at the end of the run. If a model fails, the package's `on-run-end` hook drops the tables of that run. If the dbt process is killed before the hook runs, drop leftover `<model>__src_*` and `<model>__dbt_tmp_*` tables manually, once no other run of that model is active.
 
 ### "Data quality issues detected"
 

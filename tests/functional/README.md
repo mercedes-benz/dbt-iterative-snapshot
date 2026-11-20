@@ -12,6 +12,9 @@ This folder contains pytest-based functional tests that validate the iterative s
 | `test_case_3_out_of_order` | Load file2 first, then file1 (late arrival) | **Out-of-order detection and reprocessing** |
 | `test_case_4_hard_deletes` | Record missing in file2 | Hard delete tracking |
 | `test_case_5_reappearing_record` | Record deleted then reappears | Delete + reinsert history |
+| `test_case_7_reappearing_record` | Record deleted in file2, back in file3 (file2 and file3 in one run), with `materialize_staging=true` | Same history as the default config, no SCD2 validity gaps, physical staging takes precedence over `enable_temp_views` |
+
+`test_materialize_staging.py` runs all cases of `test_iterative_snapshot.py` plus `test_case_7_reappearing_record` with `materialize_staging=true`, once with `enable_temp_views=true` (`TestPhysicalStagingWithTempViews`) and once with `enable_temp_views=false` (`TestPhysicalStagingWithoutTempViews`). After every test it asserts that the test left no new `<snapshot>__src_*` or `<snapshot>__dbt_tmp_*` table behind; tables from earlier aborted runs are ignored. `test_failed_run_leaves_no_helper_tables` covers cleanup after a failed run. `test_key_type_change_still_matches` covers the single join key and its fallback when a key column's type changes.
 
 ## Running Tests
 

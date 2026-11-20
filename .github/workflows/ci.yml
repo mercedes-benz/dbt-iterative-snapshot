@@ -114,5 +114,5 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run functional tests
-        run: pytest tests/functional/test_iterative_snapshot.py -s -v
+        run: pytest tests/functional -s -v
 
