@@ -22,7 +22,7 @@ vars:
     enable_consistency_checks: true         # Validate SCD2 integrity after each sequence
     enable_temp_views: true                 # Use temporary views for efficiency
     enable_schema_evolution: true           # Add new source columns to the snapshot table
-    materialize_staging: false              # Use physical tables for source data, staging and the SCD2 check (very wide models)
+    materialize_staging: false              # Use physical tables for source data and staging (very wide models)
 
     # Metadata table configuration
     metadata_schema: "dbt_iterative_snapshot_metadata"  # Schema for metadata/error tables
