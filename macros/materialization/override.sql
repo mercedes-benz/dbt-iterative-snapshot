@@ -88,10 +88,60 @@
 
 
 
-{% macro iterative_snapshot_staging_table(strategy, source_sql, target_relation, check_cols_config) -%}
+{#- One join key instead of one per unique_key column, which keeps the
+    staging select below the depth where Spark's ConstantPropagation overflows
+    on a cold warehouse. concat returns null when any part is null, so rows
+    with a null key part stay unmatched, as with one condition per column.
+    Text only compares like one condition per column when both sides have the
+    same type, so this returns none when a key column is missing from either
+    relation or its types differ (e.g. decimal scale), and the caller keeps one
+    condition per column, where Spark widens both sides to a common type. -#}
+{% macro iterative_snapshot_single_join_key(
+    unique_key, target_relation, source_relation
+) -%}
+    {%- set types = {'target': {}, 'source': {}} -%}
+    {%- set relations = [
+        ('target', target_relation), ('source', source_relation)
+    ] -%}
+    {%- for side, relation in relations -%}
+        {%- for column in adapter.get_columns_in_relation(relation) -%}
+            {%- do types[side].update(
+                {column.name | lower: column.data_type | lower}
+            ) -%}
+        {%- endfor -%}
+    {%- endfor -%}
+    {%- set parts = [] -%}
+    {%- for key in unique_key -%}
+        {%- set name = key | lower | replace('`', '') -%}
+        {%- set target_type = types.target.get(name) -%}
+        {%- if target_type is none or target_type != types.source.get(name) -%}
+            {%- do return(none) -%}
+        {%- endif -%}
+        {%- do parts.append("cast(" ~ key ~ " as string)") -%}
+    {%- endfor -%}
+    {%- do return("concat(" ~ parts | join(", '\\u001f', ") ~ ")") -%}
+{%- endmacro %}
+
+
+
+{% macro iterative_snapshot_staging_table(
+    strategy, source_sql, target_relation, check_cols_config,
+    source_relation=none
+) -%}
 
 
     {% set columns = config.get('snapshot_table_column_names') or get_snapshot_table_column_names() %}
+
+    {%- set join_key = strategy.unique_key -%}
+    {%- if source_relation and join_key | is_list and join_key | length > 1 -%}
+        {%- set single_key = dbt_iterative_snapshot
+            .iterative_snapshot_single_join_key(
+                join_key, target_relation, source_relation
+            ) -%}
+        {%- if single_key is not none -%}
+            {%- set join_key = single_key -%}
+        {%- endif -%}
+    {%- endif -%}
 
     {#- The timestamp strategy compares updated_at, so only the check strategy uses the flat column comparison -#}
     {%- if config.get('strategy') == 'check' and check_cols_config -%}
@@ -108,7 +158,7 @@
 
     snapshotted_data as (
 
-        select *, {{ unique_key_fields(strategy.unique_key) }}
+        select *, {{ unique_key_fields(join_key) }}
         from {{ target_relation }}
         where
             {% if config.get('dbt_valid_to_current') %}
@@ -122,7 +172,7 @@
 
     insertions_source_data as (
 
-        select *, {{ unique_key_fields(strategy.unique_key) }},
+        select *, {{ unique_key_fields(join_key) }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_updated_at","dbt_updated_at") }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_valid_from","dbt_valid_from") }},
             {{ get_dbt_valid_to_current(strategy, columns) }},
@@ -133,7 +183,7 @@
 
     updates_source_data as (
 
-        select *, {{ unique_key_fields(strategy.unique_key) }},
+        select *, {{ unique_key_fields(join_key) }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_updated_at","dbt_updated_at") }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_valid_from","dbt_valid_from") }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_valid_to","dbt_valid_to") }}
@@ -145,7 +195,7 @@
 
     deletes_source_data as (
 
-        select *, {{ unique_key_fields(strategy.unique_key) }}
+        select *, {{ unique_key_fields(join_key) }}
         from snapshot_query
     ),
     {% endif %}
@@ -159,9 +209,9 @@
 
         from insertions_source_data as source_data
         left outer join snapshotted_data
-            on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
-            where {{ unique_key_is_null(strategy.unique_key, "snapshotted_data") }}
-            or ({{ unique_key_is_not_null(strategy.unique_key, "snapshotted_data") }} and ({{ row_changed }})
+            on {{ unique_key_join_on(join_key, "snapshotted_data", "source_data") }}
+            where {{ unique_key_is_null(join_key, "snapshotted_data") }}
+            or ({{ unique_key_is_not_null(join_key, "snapshotted_data") }} and ({{ row_changed }})
 
         )
     ),
@@ -176,7 +226,7 @@
 
         from updates_source_data as source_data
         join snapshotted_data
-            on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
+            on {{ unique_key_join_on(join_key, "snapshotted_data", "source_data") }}
         where (
             {{ row_changed }}
         )
@@ -198,8 +248,8 @@
 
         from snapshotted_data
         left join deletes_source_data as source_data
-            on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
-            where {{ unique_key_is_null(strategy.unique_key, "source_data") }}
+            on {{ unique_key_join_on(join_key, "snapshotted_data", "source_data") }}
+            where {{ unique_key_is_null(join_key, "source_data") }}
     )
     {%- endif %}
 
@@ -216,7 +266,9 @@
 
 
 
-{% macro build_iterative_snapshot_staging_table(strategy, sql, target_relation, check_cols_config) %}
+{% macro build_iterative_snapshot_staging_table(
+    strategy, sql, target_relation, check_cols_config, source_relation=none
+) %}
     {#- materialize_staging=true builds a physical table instead of a temporary view, so Spark optimizes the
         staging expression tree once at CTAS instead of inlining it into the MERGE plan. Use it when wide
         check_cols/unique_key models still hit StackOverflowError. -#}
@@ -229,12 +281,12 @@
         {% set temp_relation = temp_relation.incorporate(path={
             "database": target_relation.database,
             "schema": target_relation.schema,
-            "identifier": temp_relation.identifier ~ '_' ~ invocation_id.replace('-', '')[:8]
+            "identifier": dbt_iterative_snapshot.iterative_snapshot_helper_identifier(target_relation.identifier, '__dbt_tmp')
         }) %}
     {%- endif -%}
 
     {% set select = dbt_iterative_snapshot.iterative_snapshot_staging_table(
-        strategy, sql, target_relation, check_cols_config
+        strategy, sql, target_relation, check_cols_config, source_relation
     ) %}
 
     {% call statement('build_iterative_snapshot_staging_table') %}

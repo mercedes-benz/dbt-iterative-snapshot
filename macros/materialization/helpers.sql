@@ -184,3 +184,38 @@
     {%- do run_query(insert_query) -%}
     {%- do log("Logged sequence '" ~ sequence ~ "' to metadata table", info=True) -%}
 {% endmacro %}
+
+
+{#
+  Name of a physical helper table of materialize_staging. The per-invocation suffix keeps concurrent runs of the
+  same model from colliding, and lets a run clean up its own tables without touching those of another run.
+#}
+{%- macro iterative_snapshot_helper_identifier(model_identifier, kind) -%}
+    {{- model_identifier ~ kind ~ '_' ~ invocation_id.replace('-', '')[:8] -}}
+{%- endmacro -%}
+
+{#
+  on-run-end hook: drops the materialize_staging helper tables of models that failed in this invocation.
+  A successful model has already dropped them. A process that is killed never reaches this hook.
+#}
+{%- macro iterative_snapshot_cleanup_helper_tables(results) -%}
+    {%- if execute -%}
+        {%- for result in results
+            if result.status == 'error'
+            and result.node.config.materialized == 'iterative_snapshot' -%}
+            {%- if result.node.config.get(
+                'materialize_staging', var('materialize_staging', false)
+            ) -%}
+                {%- for kind in ['__src', '__dbt_tmp'] -%}
+                    {%- set helper_relation = api.Relation.create(
+                            database=result.node.database,
+                            schema=result.node.schema,
+                            identifier=dbt_iterative_snapshot.iterative_snapshot_helper_identifier(result.node.alias, kind)) -%}
+                    {%- do run_query(
+                        'DROP TABLE IF EXISTS ' ~ helper_relation
+                    ) -%}
+                {%- endfor -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endmacro -%}

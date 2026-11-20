@@ -32,7 +32,7 @@
 | `enable_consistency_checks` | `true` | Validate and repair the SCD2 timeline (`dbt_valid_from`/`dbt_valid_to`) after processing |
 | `enable_temp_views` | `true` | Read the source query once into a temporary view instead of once per sequence |
 | `enable_schema_evolution` | `true` | Add new source columns to the snapshot table (see [Advanced Usage](ADVANCED_USAGE.md#schema-evolution)) |
-| `materialize_staging` | `false` | Build staging as a physical table, for very wide models (see [Troubleshooting](TROUBLESHOOTING.md#stackoverflowerror-during-merge-on-wide-models)) |
+| `materialize_staging` | `false` | Use physical tables instead of temporary views for the source data and the staging table, for very wide models (see [Troubleshooting](TROUBLESHOOTING.md#stackoverflowerror-during-merge-on-wide-models)). Takes precedence over `enable_temp_views` |
 | `metadata_table_name` | `iterative_snapshot_metadata` | Name of the metadata table |
 | `error_log_table_name` | `iterative_snapshot_error_log` | Name of the error log table |
 | `full_refresh` | — | Force (`true`) or prevent (`false`) full refresh for this model, overriding `--full-refresh` |

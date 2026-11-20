@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SQLFluff config (`.sqlfluff`, Databricks dialect, 120-character limit on SQL lines; lines that are only Jinja tags are not checked) and a `lint` CI job. `macros/` now passes `sqlfluff lint macros/`.
 
+### Changed
+
+- **`materialize_staging`** now also writes the source rows for all pending sequences to a physical table once per run (instead of a temporary view re-planned on every iteration). Helper tables use a per-invocation suffix and are dropped at the end of the run, including by a new `on-run-end` hook when a model fails.
+- Physical staging tables are now dropped after a successful run; previously each run with `materialize_staging=true` left one `<model>__dbt_tmp_*` table behind.
+- With `materialize_staging=true` and a multi-column `unique_key`, the staging select joins on one key (`concat` of the key columns as text) instead of one condition per column. This avoids `StackOverflowError` in Spark's `ConstantPropagation` on cold warehouses. Rows with a null key part stay unmatched, as before. When a key column's type differs between the source and the snapshot, the model keeps one condition per column.
+- The out-of-order path resolves the model's columns once per run instead of once per sequence.
+
 ## [1.0.0] - 2026-10-14
 
 ### Added
