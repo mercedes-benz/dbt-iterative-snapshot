@@ -22,7 +22,8 @@
         search_order: ['my_project', 'dbt_iterative_snapshot']
 #}
 {% macro iterative_snapshot_on_event(event_type, model_name, relation, details) %}
-    {{ return(adapter.dispatch('iterative_snapshot_on_event', 'dbt_iterative_snapshot')(event_type, model_name, relation, details)) }}
+    {%- set on_event = adapter.dispatch('iterative_snapshot_on_event', 'dbt_iterative_snapshot') -%}
+    {{ return(on_event(event_type, model_name, relation, details)) }}
 {% endmacro %}
 
 {% macro default__iterative_snapshot_on_event(event_type, model_name, relation, details) %}

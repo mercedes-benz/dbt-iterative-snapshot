@@ -33,7 +33,11 @@
     {# Columns present in the snapshot but gone from the source, excluding the snapshot's own meta columns #}
     {%- set snapshot_columns = config.get('snapshot_table_column_names') or get_snapshot_table_column_names() -%}
     {%- set meta_columns = [] -%}
-    {%- for meta_column in ['dbt_scd_id', 'dbt_updated_at', 'dbt_valid_from', 'dbt_valid_to', 'dbt_change_type', 'inserted_at', 'changed_attributes'] -%}
+    {%- set snapshot_meta_columns = [
+        'dbt_scd_id', 'dbt_updated_at', 'dbt_valid_from', 'dbt_valid_to',
+        'dbt_change_type', 'inserted_at', 'changed_attributes'
+    ] -%}
+    {%- for meta_column in snapshot_meta_columns -%}
         {%- do meta_columns.append(meta_column) -%}
         {%- do meta_columns.append(snapshot_columns.get(meta_column, meta_column) | lower) -%}
     {%- endfor -%}
@@ -46,7 +50,8 @@
 
     {# New columns that are not tracked by an explicit check_cols list will not create new SCD2 versions #}
     {%- set not_in_check_cols = [] -%}
-    {%- if config.get('strategy') == 'check' and config.get('check_cols') is not string and config.get('check_cols') is iterable -%}
+    {%- set check_cols = config.get('check_cols') -%}
+    {%- if config.get('strategy') == 'check' and check_cols is not string and check_cols is iterable -%}
         {%- set check_cols_lower = config.get('check_cols') | map('lower') | list -%}
         {%- for column in new_columns -%}
             {%- if column.name | lower not in check_cols_lower -%}

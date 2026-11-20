@@ -24,7 +24,7 @@ Every PR must be linked to an existing issue. If one doesn't exist, [create an i
 - `dbt compile` must succeed
 - SQL must pass linting:
   ```bash
-  sqlfluff lint macros/ --dialect databricks
+  sqlfluff lint macros/
   ```
 - Follow existing code patterns
 
