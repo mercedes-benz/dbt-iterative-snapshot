@@ -53,4 +53,3 @@
     WHEN MATCHED THEN
     UPDATE SET t.dbt_valid_to = u.corrected_valid_to
 {%- endmacro %}
-

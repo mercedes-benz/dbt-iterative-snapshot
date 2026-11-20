@@ -24,8 +24,9 @@ Every PR must be linked to an existing issue. If one doesn't exist, [create an i
 - `dbt compile` must succeed
 - SQL must pass linting:
   ```bash
-  sqlfluff lint macros/ --dialect databricks
+  sqlfluff lint macros/
   ```
+  `macros/materialization/iterative_snapshot.sql` is excluded (see `.sqlfluffignore`): the Jinja templater cannot parse dbt's `{% materialization %}` tag. Review changes to it by hand.
 - Follow existing code patterns
 
 ### 3. Documentation

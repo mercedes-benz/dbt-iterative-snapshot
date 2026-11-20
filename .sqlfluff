@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Mercedes-Benz Group AG
+[sqlfluff]
+dialect = databricks
+templater = jinja
+max_line_length = 120
+# LT02 (indentation) misreads indentation inside Jinja blocks and macro bodies
+exclude_rules = LT02
+large_file_skip_byte_limit = 0

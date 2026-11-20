@@ -6,7 +6,7 @@
 
         select *,
             {{ strategy.scd_id }} as {{ columns.get("dbt_scd_id", "dbt_scd_id") }},
-            {{ strategy.updated_at }} as {{ columns.get("dbt_updated_at", "dbt_updated_at")  }},
+            {{ strategy.updated_at }} as {{ columns.get("dbt_updated_at", "dbt_updated_at") }},
             {{ strategy.updated_at }} as {{ columns.get("dbt_valid_from", "dbt_valid_from") }},
             {{ get_dbt_valid_to_current(strategy, columns) }},
             cast(null as timestamp) as {{ columns.get("inserted_at", "inserted_at") }},
@@ -233,7 +233,9 @@
         }) %}
     {%- endif -%}
 
-    {% set select = dbt_iterative_snapshot.iterative_snapshot_staging_table(strategy, sql, target_relation, check_cols_config) %}
+    {% set select = dbt_iterative_snapshot.iterative_snapshot_staging_table(
+        strategy, sql, target_relation, check_cols_config
+    ) %}
 
     {% call statement('build_iterative_snapshot_staging_table') %}
         {{ create_table_as(not as_table, temp_relation, select) }}

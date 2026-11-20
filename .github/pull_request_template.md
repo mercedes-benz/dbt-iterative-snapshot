@@ -11,7 +11,7 @@ Resolves #
 - [ ] Linked to an issue
 - [ ] Added/updated integration tests
 - [ ] `dbt compile` succeeds
-- [ ] `sqlfluff lint macros/ --dialect databricks` passes
+- [ ] `sqlfluff lint macros/` passes
 - [ ] Updated `README.md` / `docs/` (if applicable)
 - [ ] Updated `CHANGELOG.md`
 - [ ] Read [CONTRIBUTING.md](../CONTRIBUTING.md)

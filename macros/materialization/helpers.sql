@@ -1,14 +1,14 @@
 {# SPDX-License-Identifier: MIT #}
 {# Copyright (c) 2024 Mercedes-Benz Group AG #}
 
-{%-  macro iterative_snapshot_check_for_inconsistencies(target_relation, unique_key, sequence_by)  -%} 
+{%- macro iterative_snapshot_check_for_inconsistencies(target_relation, unique_key, sequence_by) -%} 
     {# 
         Check for inconsistencies in the SCD2 validity columns (dbt_valid_from,dbt_valid_to). 
         This query identifies records where the dbt_valid_to column does not align with the dbt_valid_from 
         column of the next row, indicating a potential inconsistency.
     #}
     
-    {%-  set inconsistency_check_query  -%} 
+    {%- set inconsistency_check_query -%} 
         WITH ordered_data AS (
             SELECT
                 {{ unique_key }} as unique_key,
@@ -39,15 +39,15 @@
         )
 
         SELECT COUNT(*) AS inconsistency_count FROM inconsistencies;
-    {%-  endset  -%} 
+    {%- endset -%} 
     
 
-    {%-  set inconsistency_count = run_query(inconsistency_check_query).columns[0].values()[0]  -%} 
+    {%- set inconsistency_count = run_query(inconsistency_check_query).columns[0].values()[0] -%} 
     
 
     {{ return(inconsistency_count) }}
 
-{%-  endmacro  -%} 
+{%- endmacro -%} 
 
 
  
@@ -106,7 +106,8 @@
   Add any column in column_definitions (e.g. 'num_inserted_rows BIGINT') that the relation does not already have
 #}
 {% macro iterative_snapshot_add_missing_columns(relation, column_definitions) %}
-    {%- set existing_columns = adapter.get_columns_in_relation(relation) | map(attribute='name') | map('lower') | list -%}
+    {%- set existing_columns = adapter.get_columns_in_relation(relation)
+        | map(attribute='name') | map('lower') | list -%}
     {%- set missing_definitions = [] -%}
     {%- for column_definition in column_definitions -%}
         {%- if column_definition.split(' ')[0] | lower not in existing_columns -%}
@@ -149,7 +150,9 @@
   merge_stats: optional dict with num_affected_rows/num_updated_rows/num_deleted_rows/num_inserted_rows
   as returned by the Databricks MERGE, so consumers can tell "ran" apart from "ran and wrote rows".
 #}
-{% macro insert_metadata_record(table_name, invocation_id, node_id, run_started_at, model_name, sequence, merge_stats=none) %}
+{% macro insert_metadata_record(
+    table_name, invocation_id, node_id, run_started_at, model_name, sequence, merge_stats=none
+) %}
     {%- set merge_stats = merge_stats or {} -%}
     {%- set insert_query -%}
         INSERT INTO {{ table_name }} (
