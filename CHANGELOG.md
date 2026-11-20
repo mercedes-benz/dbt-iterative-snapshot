@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- SQLFluff config (`.sqlfluff`, Databricks dialect, 120-character lines) and a `lint` CI job. `macros/` now passes `sqlfluff lint macros/`.
+- SQLFluff config (`.sqlfluff`, Databricks dialect, 120-character limit on SQL lines; lines that are only Jinja tags are not checked) and a `lint` CI job. `macros/` now passes `sqlfluff lint macros/`.
 
 ## [1.0.0] - 2026-10-14
 

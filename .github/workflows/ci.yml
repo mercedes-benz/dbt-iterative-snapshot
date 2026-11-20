@@ -64,7 +64,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install SQLFluff
-        run: pip install sqlfluff==3.3.1
+        run: pip install "$(grep '^sqlfluff==' requirements.txt)"
 
       - name: sqlfluff lint
         run: sqlfluff lint macros/
